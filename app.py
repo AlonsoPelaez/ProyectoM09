@@ -1,4 +1,4 @@
-from flask import *
+from flask import Flask, jsonify, request
 
 import db_music
 
@@ -19,13 +19,13 @@ def groups():
 
 @app.route('/groups/<idGroup>', methods=["GET", "PUT", "DELETE"])
 def group(idGroup):
-    groups = db_music.get_groups(idGroup)
+    group= db_music.get_groups(idGroup)
 
-    if not groups:
+    if not group:
         return {"error": "Group not found"}, 404
 
     if request.method == 'GET':
-        return jsonify(groups[0])
+        return jsonify(group[0])
     elif request.method == 'PUT':
         data = request.json
         if not data["name"]:
@@ -53,6 +53,27 @@ def albums():
         db_music.insert_album(data)
         return '', 201
 
+
+@app.route('/albums/<idAlbum>', methods=["GET", "PUT", "DELETE"])
+def album(idAlbum):
+    album = db_music.get_albums(idAlbum)
+
+    if not album:
+        return {"error": "Album not found"}, 404
+
+    if request.method == 'GET':
+        return jsonify(album[0])
+
+    elif request.method == 'PUT':
+        data = request.json
+        if not data["title"] or not data["image"] or not data["idGroup"] or not data["description"]:
+            return {"error": "there are blank fields "}, 403
+        db_music.update_album(idAlbum, data)
+        return {}
+    elif request.method == 'DELETE':
+        db_music.delete_album(idAlbum)
+        return {}
+
 @app.route('/songs/', methods=['GET', 'POST'])
 def songs():
     if request.method == 'GET':
@@ -64,6 +85,34 @@ def songs():
             return {"error": "there are blank fields"}, 403
         db_music.insert_song(data)
         return '', 201
+
+@app.route('/songs/<idSong>', methods=["GET", "PUT", "DELETE"])
+def song(idSong):
+    song = db_music.get_songs(idSong)
+
+    if not song:
+        return {"error": "Song not found"}, 404
+
+    if request.method == 'GET':
+        return jsonify(song[0])
+
+    elif request.method == 'PUT':
+        data = request.json
+        if not data["idAlbum"] or not data["title"] or not data["length"] :
+            return {"error": "there are blank fields "}, 403
+
+        album = db_music.get_albums(data["idAlbum"])
+        if album is None:
+            return {"error": "IdAlbum does not exist"}, 403
+
+        db_music.update_album(idSong, data)
+        return {}
+    elif request.method == 'DELETE':
+        db_music.delete_song(idSong)
+        return {}
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
