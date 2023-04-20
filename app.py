@@ -43,14 +43,13 @@ def albums():
         return jsonify(albums)
     elif request.method == 'POST':
         data = request.json
-        if not data["title"] or not data["image"] or not data["idGroup"] or not data["description"]:
-            return {"error": " there are blank fields "}, 403
 
         group = db_music.get_groups(data["idGroup"])
         if group is None:
             return {"error": "idGroup does not exist"}, 403
 
         db_music.insert_album(data)
+
         return '', 201
 
 
@@ -66,8 +65,8 @@ def album(idAlbum):
 
     elif request.method == 'PUT':
         data = request.json
-        if not data["title"] or not data["image"] or not data["idGroup"] or not data["description"]:
-            return {"error": "there are blank fields "}, 403
+        print(data)
+        print(idAlbum)
         db_music.update_album(idAlbum, data)
         return {}
     elif request.method == 'DELETE':
@@ -81,8 +80,6 @@ def songs():
         return jsonify(songs)
     elif request.method == 'POST':
         data = request.json
-        if not data["idAlbum"] or not data["title"] or not data["length"]:
-            return {"error": "there are blank fields"}, 403
         db_music.insert_song(data)
         return '', 201
 
@@ -98,14 +95,14 @@ def song(idSong):
 
     elif request.method == 'PUT':
         data = request.json
-        if not data["idAlbum"] or not data["title"] or not data["length"] :
-            return {"error": "there are blank fields "}, 403
-
+        print(data)
+        print(idSong)
         album = db_music.get_albums(data["idAlbum"])
+        print(album)
         if album is None:
             return {"error": "IdAlbum does not exist"}, 403
 
-        db_music.update_album(idSong, data)
+        db_music.update_Songs(idSong, data)
         return {}
     elif request.method == 'DELETE':
         db_music.delete_song(idSong)

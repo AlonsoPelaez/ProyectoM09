@@ -78,7 +78,7 @@ def delete_group(id):
 def get_albums(idAlbum=None):
     conn = sqlite3.connect('db_musica.sqlite')
     sql = 'SELECT DISTINCT a.id, a.title, g.name, a.idGroup, a.description, a.image FROM Albums as a JOIN Groups as g ON (a.idGroup = g.id)'
-
+    print(idAlbum)
     if idAlbum is not None:
         sql += ' WHERE a.id=' + idAlbum
     cursor = conn.execute(sql)
@@ -95,6 +95,42 @@ def get_albums(idAlbum=None):
             })
     conn.close()
     return albums
+
+def insert_album(data):
+
+    conn = sqlite3.connect('db_musica.sqlite')
+
+    sql = 'INSERT INTO Albums (title, image, idGroup, description) VALUES (?,?,?,?)'
+    params = [data["title"], data["image"], data["idGroup"], data["description"]]
+    print(params)
+    conn.execute(sql, params)
+    conn.commit()
+
+    conn.close()
+
+
+# elimina un album con el id del album
+def delete_album(idAlbum):
+    conn = sqlite3.connect('db_musica.sqlite')
+    sql = 'DELETE FROM Albums WHERE id = ?'
+    params = [idAlbum]
+
+    conn.execute(sql, params)
+    conn.commit()
+
+    conn.close()
+
+
+# actualiza los valores de un album con un id
+def update_album(id, data):
+    conn = sqlite3.connect('db_musica.sqlite')
+    sql = 'UPDATE Albums SET title = ?, image = ?, idGroup = ?, description = ? WHERE id = ?'
+    params = [data["title"], data["image"], data["idGroup"], data["description"], id]
+
+    conn.execute(sql, params)
+    conn.commit()
+
+    conn.close()
 
 
 def get_songs(idSong=None):
@@ -125,17 +161,7 @@ def get_songs(idSong=None):
     return songs
 
 
-def insert_album(data):
 
-        conn = sqlite3.connect('db_musica.sqlite')
-
-        sql = 'INSERT INTO Albums (title, image, idGroup, description) VALUES (?,?,?,?)'
-        params = [data["title"], data["image"], data["idGroup"], data["description"]]
-
-        conn.execute(sql, params)
-        conn.commit()
-
-        conn.close()
 
 
 def insert_song(data):
@@ -143,6 +169,32 @@ def insert_song(data):
     conn = sqlite3.connect('db_musica.sqlite')
     sql = 'INSERT INTO Songs (idAlbum, title, length) VALUES (?,?,?)'
     params = [data["idAlbum"], data["title"], data["length"]]
+
+    conn.execute(sql, params)
+    conn.commit()
+
+    conn.close()
+
+
+# elimina una cancion con el id del album
+def delete_song(idSong):
+    conn = sqlite3.connect('db_musica.sqlite')
+    sql = 'DELETE FROM Songs WHERE id = ?'
+    params = [idSong]
+
+    conn.execute(sql, params)
+    conn.commit()
+
+    conn.close()
+
+
+# actualiza los valores de un cancion con un id
+def update_Songs(id, data):
+
+    conn = sqlite3.connect('db_musica.sqlite')
+    sql = 'UPDATE Songs SET idAlbum = ?, title = ?, length = ? WHERE id = ?'
+
+    params = [data["idAlbum"], data["title"], data["length"], id]
 
     conn.execute(sql, params)
     conn.commit()
