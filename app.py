@@ -65,8 +65,6 @@ def album(idAlbum):
 
     elif request.method == 'PUT':
         data = request.json
-        print(data)
-        print(idAlbum)
         db_music.update_album(idAlbum, data)
         return {}
     elif request.method == 'DELETE':
